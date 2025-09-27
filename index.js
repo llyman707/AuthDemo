@@ -4,6 +4,7 @@ const User = require('./models/user');
 const mongoose = require('mongoose');
 const bycrypt = require('bcrypt');
 const session = require('express-session');
+const { reset } = require('colors');
 
 mongoose.connect('mongodb://127.0.0.1:27017/loginDemo')
     .then(() => {
@@ -57,11 +58,17 @@ app.post('/login', async (req, res) => {
     }
 })
 
+app.post('/logout', (req, res) => {
+    req.session.user_id = null;
+    req.session.destroy();
+    res.redirect('/login');
+}) 
+
 app.get('/secret', (req, res) => {
     if (!req.session.user_id) {
-        res.redirect('/login')
+        return res.redirect('/login')
     }
-    res.send('this is a secret! you cannot see me unless you are logged in')
+    res.render('secret')
 })
 
 app.listen(5000, () => {
